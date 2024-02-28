@@ -58,6 +58,7 @@ app.get('/docs', (req, res) => {
 // STUDENTS ROUTES =====================
 app.get('/api/students', (req, res, next) => {
   Student.find({})
+  .populate('cohort')
     .then((students) => {
       console.log('Retrieved students ->', students);
       res.json(students);
@@ -72,6 +73,7 @@ app.get('/api/students', (req, res, next) => {
 app.get('/api/students/cohort/:id', (req, res, next) => {
   const { id } = req.params;
   Student.find({ cohort: id })
+  .populate('cohort')
     .then((students) => {
       console.log('Retrieved students ->', students);
       res.json(students);
@@ -87,6 +89,7 @@ app.get('/api/students/cohort/:id', (req, res, next) => {
 app.get('/api/students/:id', (req, res) => {
   const { id } = req.params;
   Student.findById(id)
+  .populate('cohort')
     .then((studentFromDB) => {
       res.status(200).json(studentFromDB);
     })
