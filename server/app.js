@@ -6,6 +6,7 @@ const PORT = 5005;
 const mongoose = require('mongoose');
 const Student = require('./data/Students.model');
 const Cohort = require('./data/Cohorts.model');
+const { errorHandler, notFoundHandler} = require('./middleware/error-handling')
 
 mongoose
   .connect('mongodb://127.0.0.1:27017/cohort-tools-api')
@@ -64,8 +65,7 @@ app.get('/api/students', (req, res, next) => {
       res.json(students);
     })
     .catch((error) => {
-      console.error('Error while retrieving students ->', error);
-      res.status(500).json({ error: 'Failed to retrieve books' });
+     next(error)
     });
 });
 
@@ -79,14 +79,13 @@ app.get('/api/students/cohort/:id', (req, res, next) => {
       res.json(students);
     })
     .catch((error) => {
-      console.error('Error while retrieving students ->', error);
-      res.status(500).json({ error: 'Failed to retrieve books' });
+     next(error);
     });
 });
 // end ---
 
 // GET A SPECIFIC BY ID / GET-------
-app.get('/api/students/:id', (req, res) => {
+app.get('/api/students/:id', (req, res,next) => {
   const { id } = req.params;
   Student.findById(id)
   .populate('cohort')
@@ -94,7 +93,7 @@ app.get('/api/students/:id', (req, res) => {
       res.status(200).json(studentFromDB);
     })
     .catch((e) => {
-      res.status(500).json({ message: 'Error while creating a new student' });
+      next(e);
     });
 });
 // end ---
@@ -132,13 +131,13 @@ app.post('/api/students', (req, res, next) => {
       res.status(201).json(studentsFromDB);
     })
     .catch((e) => {
-      res.status(500).json({ message: 'Error while creating a new student' });
+      next(e);
     });
 });
 // end ---
 
 // UPDATE BY ID / PUT--------
-app.put('/api/students/:id', (req, res) => {
+app.put('/api/students/:id', (req, res,next) => {
   const { id } = req.params;
   const {
     firstName,
@@ -174,20 +173,20 @@ app.put('/api/students/:id', (req, res) => {
       res.status(200).json(updatedStudent);
     })
     .catch((e) => {
-      res.status(500).json({ message: 'Error while creating a new Student' });
+      next(e)
     });
 });
 // end ----
 
 // DELETE BY ID / DELETE ----
-app.delete('/api/students/:id', (req, res) => {
+app.delete('/api/students/:id', (req, res,next) => {
   const { id } = req.params;
   Student.findByIdAndDelete(id)
     .then(() => {
       res.status(204).send();
     })
     .catch((e) => {
-      res.status(500).json({ message: 'Error while creating a new Student' });
+      next(e)
     });
 });
 // end ---
@@ -202,20 +201,19 @@ app.get('/api/cohorts', (req, res, next) => {
       res.json(cohorts);
     })
     .catch((error) => {
-      console.error('Error while retrieving Cohorts ->', error);
-      res.status(500).json({ error: 'Failed to retrieve cohorts' });
+     next(e)
     });
 });
 
 // GET A SPECIFIC BY ID / GET-------
-app.get('/api/cohorts/:id', (req, res) => {
+app.get('/api/cohorts/:id', (req, res,next) => {
   const { id } = req.params;
   Cohort.findById(id)
     .then((cohortFromDB) => {
       res.status(200).json(cohortFromDB);
     })
     .catch((e) => {
-      res.status(500).json({ message: 'Error while creating a new cohort' });
+     next(e)
     });
 });
 // end ---
@@ -251,13 +249,13 @@ app.post('/api/cohorts', (req, res, next) => {
       res.status(201).json(cohortsFromDB);
     })
     .catch((e) => {
-      res.status(500).json({ message: 'Error while creating a new cohorts' });
+      next(e)
     });
 });
 // end ---
 
 // UPDATE BY ID / PUT--------
-app.put('/api/cohorts/:id', (req, res) => {
+app.put('/api/cohorts/:id', (req, res,next) => {
   const { id } = req.params;
   const {
     inProgress,
@@ -291,25 +289,27 @@ app.put('/api/cohorts/:id', (req, res) => {
       res.status(200).json(updatedCohort);
     })
     .catch((e) => {
-      res.status(500).json({ message: 'Error while creating a new Cohort' });
+     next(e)
     });
 });
 // end ----
 
 // DELETE BY ID / DELETE ----
-app.delete('/api/cohorts/:id', (req, res) => {
+app.delete('/api/cohorts/:id', (req, res,next) => {
   const { id } = req.params;
   Cohort.findByIdAndDelete(id)
     .then(() => {
       res.status(204).send();
     })
     .catch((e) => {
-      res.status(500).json({ message: 'Error while creating a new Cohort' });
+      next(e)
     });
 });
 // end ---
 
 // END ======
+app.use(errorHandler);
+app.use(notFoundHandler);
 
 // START SERVER
 app.listen(PORT, () => {
