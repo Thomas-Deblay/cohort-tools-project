@@ -26,9 +26,9 @@ function StudentCreateForm({ cohortId, cohortName, callback, closeCallback }) {
     const requestBody = { ...student, cohort: cohortId };
 
     setSubmitting(true);
-
+    const storedToken = localStorage.getItem("authToken");
     axios
-      .post(`${API_URL}/api/students`, requestBody)
+      .post(`${API_URL}/api/students`, requestBody,{ headers: { Authorization: `Bearer ${storedToken}`} })
       .then(() => {
         // Reset the state to clear the inputs
         setStudent({ ...DEFAULT_STUDENT_FORM_VALUES, cohort: cohortId });

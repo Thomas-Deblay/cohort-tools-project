@@ -45,11 +45,14 @@ function CohortCreatePage() {
     const requestBody = {
       ...cohort,
     };
+    
+    const storedToken = localStorage.getItem("authToken");
 
     axios
-      .post(`${API_URL}/api/cohorts`, requestBody)
+      .post(`${API_URL}/api/cohorts`, requestBody, { headers: { Authorization: `Bearer ${storedToken}`} })
       .then((response) => {
         const newCohort = response.data;
+
 
         navigate(`/cohorts/details/${newCohort._id}`);
       })

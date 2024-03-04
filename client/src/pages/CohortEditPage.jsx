@@ -33,6 +33,8 @@ function CohortEditPage() {
 
   const navigate = useNavigate();
 
+  
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -53,16 +55,17 @@ function CohortEditPage() {
     const requestBody = {
       ...cohort,
     };
-
+    const storedToken = localStorage.getItem("authToken");
     axios
-      .put(`${API_URL}/api/cohorts/${cohortId}`, requestBody)
+      .put(`${API_URL}/api/cohorts/${cohortId}`, requestBody,{ headers: { Authorization: `Bearer ${storedToken}`} })
       .then(() => navigate(`/cohorts/details/${cohortId}`))
       .catch((error) => console.log(error));
   };
 
   const handleDelete = () => {
+    const storedToken = localStorage.getItem("authToken");
     axios
-      .delete(`${API_URL}/api/cohorts/${cohort._id}`)
+      .delete(`${API_URL}/api/cohorts/${cohort._id}`,{ headers: { Authorization: `Bearer ${storedToken}`} })
       .then(() => navigate(`/dashboard`))
       .catch((error) => console.log(error));
   };
